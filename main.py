@@ -2613,12 +2613,16 @@ async def handle_webapp_data(message: Message, state: FSMContext):
                 return
             
             # Формируем полный объект товара
+            # Получаем URL изображения (берём только первое если их несколько)
+            raw_image = product.get("image", "")
+            first_image = raw_image.split(",")[0].strip() if raw_image else ""
+
             enriched_item = {
                 "id": product_id,
                 "name": product.get("name", "Без названия"),
                 "price": int(product.get("price", 0)),
                 "qty": qty,
-                "image": product.get("image", ""),
+                "image": first_image,  # ← только первое фото для PDF
                 "category": product.get("category", "unknown"),
                 "weight": float(product.get("weight", 0)),
                 "cube": float(product.get("cube", 0))
