@@ -134,7 +134,7 @@ class ValidationError(Exception):
 
 # ==================== КОНФИГУРАЦИЯ ТАЙМЕРА WEBAPP ====================
 # Время активности кнопки "Сделать заказ" в секундах
-WEBAPP_BUTTON_TIMEOUT = int(os.getenv("WEBAPP_BUTTON_TIMEOUT", "86400"))
+WEBAPP_BUTTON_TIMEOUT = int(os.getenv("WEBAPP_BUTTON_TIMEOUT", "300"))
 
 
 # Словарь для хранения времени последнего /start для каждого пользователя
@@ -2716,7 +2716,20 @@ async def handle_webapp_data(message: Message, state: FSMContext):
         )
 
     await message.answer_document(document=pdf_file, caption=preview_text)
-    
+
+    # Клавиатура с кнопкой отмены
+    user_id_tmp = message.from_user.id
+    lang_tmp = get_user_lang(user_id_tmp)
+    cancel_kb = ReplyKeyboardMarkup(
+        keyboard=[[KeyboardButton(text="❌ Отменить заказ" if lang_tmp == "ru" else "❌ Buyurtmani bekor qilish")]],
+        resize_keyboard=True,
+        one_time_keyboard=True,
+    )
+    if lang_tmp == "ru":
+        await message.answer("Введите полное имя для подтверждения или отмените заказ:", reply_markup=cancel_kb)
+    else:
+        await message.answer("Tasdiqlash uchun to'liq ismingizni kiriting yoki buyurtmani bekor qiling:", reply_markup=cancel_kb)
+
     # Сохраняем данные заказа для подписи
     await state.update_data(order_data=validated_data)
     await state.set_state(OrderSign.waiting_name)
@@ -3453,6 +3466,16 @@ async def order_signature_handler(message: Message, state: FSMContext):
         lang = get_user_lang(message.from_user.id)
         sign_name = message.text.strip()
         profile_name = get_user_full_name(message.from_user.id)
+
+        # ❌ Обработка отмены заказа
+        if sign_name in ("❌ Отменить заказ", "❌ Buyurtmani bekor qilish"):
+            await state.clear()
+            kb = get_main_menu_keyboard(message.from_user.id, lang)
+            if lang == "ru":
+                await message.answer("Заказ отменён. Возврат в главное меню.", reply_markup=kb)
+            else:
+                await message.answer("Buyurtma bekor qilindi. Bosh menyuga qaytildi.", reply_markup=kb)
+            return
 
         if not sign_name:
             if lang == "ru":
