@@ -2700,7 +2700,7 @@ async def handle_webapp_data(message: Message, state: FSMContext):
             f"⚠️ ВНИМАНИЕ!\n"
             f"Внимательно проверьте заказ выше.\n"
             f"Вы несете ответственность за корректность данных.\n\n"
-            f"❌ Если есть ошибки - вернитесь в меню и создайте заказ заново.\n"
+            f"❌ Если есть ошибки - нажмите Отменить заказ.\n"
             f"✅ Если все верно - введите ваше полное имя для подтверждения:"
         )
     else:
@@ -2711,7 +2711,7 @@ async def handle_webapp_data(message: Message, state: FSMContext):
             f"⚠️ DIQQAT!\n"
             f"Yuqoridagi buyurtmani diqqat bilan tekshiring.\n"
             f"Siz ma'lumotlarning to'g'riligiga javobgarsiz.\n\n"
-            f"❌ Agar xato bo'lsa - menyuga qaytib, buyurtmani qayta yarating.\n"
+            f"❌ Agar xato bo'lsa - Buyurtmani bekor qilish tugmasini bosing.\n"
             f"✅ Agar hammasi to'g'ri bo'lsa - tasdiqlash uchun to'liq ismingizni kiriting:"
         )
 
